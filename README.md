@@ -1,1 +1,1 @@
-# A social media made with react
+# A social media made with react and node
