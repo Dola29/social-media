@@ -1,14 +1,24 @@
 import './Post.css'
+import axios from 'axios';
 import {MoreVert} from '@material-ui/icons'
-import {Users} from '../../dummyData';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import {format} from 'timeago.js';
+
 
 export default function Post({post}) {
 
-    const user = Users.filter(u=>u.id === post.userId)[0];
-    const [like, setLike] = useState(post.like);
+    const [like, setLike] = useState(post.likes.length);
     const [isLiked, setIsLiked] = useState(false);
+    const [user, setUser] = useState({});
     const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+
+    useEffect(() => {
+        const fetchUser = async () =>{
+            const response = await axios.get(`users/${post.userId}`);
+            setUser(response.data)
+        };
+        fetchUser();
+    },[post.userId])
 
     const likeHandler =()=>{
         setLike(isLiked ? like - 1 : like + 1);
@@ -20,9 +30,9 @@ export default function Post({post}) {
             <div className="postWrapper">
                 <div className="postTop">
                     <div className="postTopLeft">
-                        <img src={PF + user.profilePicture} alt="" className="postProfileImg" />
+                        <img src={user.profilePicture || `${PF}person/noAvatar.png`} alt="" className="postProfileImg" />
                         <span className="postUsername">{user.username}</span>
-                        <span className="postDate">{post.date}</span>
+                        <span className="postDate">{format(post.createdAt)}</span>
                     </div>
                     <div className="postTopRight">
                         <MoreVert/>
@@ -30,13 +40,13 @@ export default function Post({post}) {
                 </div>
                 <div className="postCenter">
                     <span className="postText">{post?.desc}</span>
-                    <img src={PF + post.photo} alt="" className="postImg" />
+                    <img src={PF + post.img} alt="" className="postImg" />
                 </div>
                 <div className="postBottom">
                     <div className="postBottomLeft">
                         <img src={`${PF}like.png`} alt="" className="likeIcon" onClick={likeHandler} />
                         <img src={`${PF}heart.png`} alt="" className="likeIcon"  onClick={likeHandler} />
-                        <span className="postLikeCounter">{like} peoples like it</span>
+                        <span className="postLikeCounter">{like} people like it</span>
                     </div>
                     <div className="postBottomRight">
                         <span className="postCommentText">
