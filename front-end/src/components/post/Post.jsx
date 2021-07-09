@@ -3,6 +3,7 @@ import axios from 'axios';
 import {MoreVert} from '@material-ui/icons'
 import { useState, useEffect } from 'react';
 import {format} from 'timeago.js';
+import {Link} from 'react-router-dom';
 
 
 export default function Post({post}) {
@@ -14,7 +15,7 @@ export default function Post({post}) {
 
     useEffect(() => {
         const fetchUser = async () =>{
-            const response = await axios.get(`users/${post.userId}`);
+            const response = await axios.get(`/users?userId=${post.userId}`);
             setUser(response.data)
         };
         fetchUser();
@@ -30,7 +31,11 @@ export default function Post({post}) {
             <div className="postWrapper">
                 <div className="postTop">
                     <div className="postTopLeft">
-                        <img src={user.profilePicture || `${PF}person/noAvatar.png`} alt="" className="postProfileImg" />
+                        <Link to={`profile/${user.username}`}>
+                            <img src={user.profilePicture || `${PF}person/noAvatar.png`} 
+                                alt="" className="postProfileImg" />
+                        </Link>
+                        
                         <span className="postUsername">{user.username}</span>
                         <span className="postDate">{format(post.createdAt)}</span>
                     </div>
